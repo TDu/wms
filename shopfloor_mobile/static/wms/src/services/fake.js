@@ -13,7 +13,7 @@ var DEMO_SINGLE_PUTAWAY_1 = {
                 "id": 2,
                 "name": 'Location SRC 2',
             },
-            "product": {"id": 1, "name": 'Product 1'},
+            "product": [{"id": 1, "name": 'Product 1', "qty": 5}, {"id": 2, "name": 'Product 2', "qty": 2}],
             "picking": {"id": 1, "name": 'Picking 1'},
         },
         "state": "scan_location",
