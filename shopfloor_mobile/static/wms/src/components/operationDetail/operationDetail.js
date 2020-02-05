@@ -2,15 +2,14 @@
 var operationDetail = Vue.component('operation-detail', {
   data: function () {
     return {
-        details_overlay: false,
+        show_detail_dialog: false,
     }
   },
   props:['operation'],
     methods: {
         show_details: function() {
-        console.log('SHOW ME SOME Details...');
-        this.details_overlay = true;
-    },
+            this.show_detail_dialog = true;
+        },
     },
   template: `
   <div class="detail operation-detail" v-if="!_.isEmpty(operation)">
@@ -21,7 +20,7 @@ var operationDetail = Vue.component('operation-detail', {
         <th>Name</th>
         <td>
             {{ operation.name }}
-            <v-btn @click="show_details" icon text>
+            <v-btn @click="show_details" icon text class="float-right">
                 <v-icon large dark>mdi-help-circle</v-icon>
             </v-btn>
         </td>
@@ -39,13 +38,15 @@ var operationDetail = Vue.component('operation-detail', {
         <td>{{ operation.location_dst.name }}</td>
       </tr>
       </tbody>
-        <v-overlay :value="details_overlay">
-            <more-info :packDetail="operation"></more-info>
-            <v-btn color="primary" @click="details_overlay = false">
-                Close
-            </v-btn>
-        </v-overlay> 
 
+    <v-dialog v-model="show_detail_dialog">
+        <v-card>
+            <detail-pack :packDetail="operation"></detail-pack>
+            <v-card-actions>
+                <v-btn color="primary" @click="show_detail_dialog = false">Close</v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
 
     </template>
   </v-simple-table>
