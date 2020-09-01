@@ -54,6 +54,13 @@ class StockReceptionScreen(models.Model):
         "select_packaging": {
             "label": _("Select Packaging"),
             "next_steps": [
+                # TODO: Should add a before step
+                # Write some test before...
+                # {
+                #     # Loop until all moves are processed
+                #     "before": "_before_set_location_to_select_move",
+                #     "next": "select_move",
+                # },
                 {
                     # Loop until all moves are processed
                     "before": "_before_set_location_to_select_move",
@@ -425,8 +432,8 @@ class StockReceptionScreen(models.Model):
         selected product.
         """
         self._validate_current_move()
-        if not self.current_filter_product:
-            return False
+        # if not self.current_filter_product:
+        #     return False
         moves_to_process_ok = any(
             move.quantity_done < move.product_uom_qty
             for move in self.picking_filtered_move_lines
@@ -456,6 +463,9 @@ class StockReceptionScreen(models.Model):
         move_line = fields.first(self.current_move_id.move_line_ids)
         self.current_move_line_id = move_line
 
+        if self.current_move_id.last_move_line_lot_id:
+            move_line.lot_id = self.current_move_id.last_move_line_lot_id
+
     def _before_select_move_to_set_lot_number(self):
         """Decide if we have to handle lots on the current move."""
         return self.current_move_id.has_tracking != "none"
@@ -466,6 +476,8 @@ class StockReceptionScreen(models.Model):
                 message="", title=_("You have to fill the lot number.")
             )
             return
+        # Saving the lot number for next operation
+        self.current_move_id.last_move_line_lot_id = self.current_move_line_id.lot_id
         self.next_step()
 
     def process_set_expiry_date(self):
