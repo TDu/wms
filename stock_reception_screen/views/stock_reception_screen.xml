@@ -60,7 +60,7 @@
                             string="Cancel"
                             icon="fa-undo"
                             class="btn-danger"
-                            barcode_trigger="save"
+                            barcode_trigger="cancel"
                             attrs="{'invisible': [('current_step', 'in', ('select_product', 'done'))]}"
                         />
                         <button
