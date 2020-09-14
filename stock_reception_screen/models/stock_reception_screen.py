@@ -114,6 +114,9 @@ class StockReceptionScreen(models.Model):
     current_move_product_packaging_ids = fields.One2many(
         related="current_move_id.product_id.packaging_ids"
     )
+    current_move_product_vendor_code = fields.Char(
+        string="Vendor Code", compute="_compute_current_move_product_vendor_code"
+    )
     # current move line
     current_move_line_id = fields.Many2one(comodel_name="stock.move.line", copy=False)
     current_move_line_location_dest_id = fields.Many2one(
@@ -189,6 +192,15 @@ class StockReceptionScreen(models.Model):
                 steps = self.get_reception_screen_steps()
                 step_descr = steps[self.current_step]["label"]
                 wiz.current_step_descr = step_descr
+
+    @api.depends("current_move_product_id")
+    def _compute_current_move_product_vendor_code(self):
+        for wiz in self:
+            supplier_info = fields.first(wiz.current_move_product_id.seller_ids.filtered(lambda r: r.product_code))
+            if supplier_info:
+                wiz.current_move_product_vendor_code = supplier_info.product_code
+            else:
+                wiz.current_move_product_vendor_code = ""
 
     @api.depends("current_move_line_id.location_dest_id")
     def _compute_current_move_line_location_dest_id(self):

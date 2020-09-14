@@ -98,6 +98,13 @@
                                     class="mr8"
                                 />
                             </div>
+                            <label for="current_move_product_vendor_code" />
+                            <div>
+                                <field
+                                    name="current_move_product_vendor_code"
+                                    class="mr8"
+                                />
+                            </div>
                             <hr colspan="2" />
                         </group>
                         <group
