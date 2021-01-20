@@ -8,6 +8,11 @@ export var SettingsControlPanel = Vue.component("settings-control-panel", {
     data: function() {
         return {};
     },
+    methods: {
+        logout: function() {
+            this.$root.logout();
+        },
+    },
     template: `
         <Screen :screen_info="{title: $t('screen.settings.home.title'), klass: 'settings settings-control-panel'}">
 
@@ -40,6 +45,11 @@ export var SettingsControlPanel = Vue.component("settings-control-panel", {
                             <v-icon>mdi-flag</v-icon>
                             <span>{{ $t("screen.settings.language.name") }}</span>
                         </v-btn>
+                    </v-col>
+                </v-row>
+                <v-row align="center">
+                    <v-col class="text-center" cols="12">
+                        <btn-action @click="logout()">{{ $t('screen.settings.profile.action.logout') }}</btn-action>
                     </v-col>
                 </v-row>
                 <v-row align="center">
