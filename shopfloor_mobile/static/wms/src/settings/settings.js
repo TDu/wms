@@ -6,7 +6,10 @@
 
 export var SettingsControlPanel = Vue.component("settings-control-panel", {
     data: function() {
-        return {};
+        return {
+            // Why do I have to do the sub 1 to get the correct name ?
+            profile_name: this.$root.has_profile ? this.$root.profiles[this.$root.profile.id -1].name : "?",
+            };
     },
     methods: {
         logout: function() {
@@ -35,7 +38,7 @@ export var SettingsControlPanel = Vue.component("settings-control-panel", {
                     <v-col class="text-center" cols="12">
                         <v-btn @click="$router.push({'name': 'profile'})">
                             <v-icon>mdi-account-cog</v-icon>
-                            <span>{{ $t("screen.settings.profile.name") }}</span>
+                            <span>{{ $t("screen.settings.profile.name") }} - {{ profile_name }}</span>
                         </v-btn>
                     </v-col>
                 </v-row>
@@ -43,7 +46,7 @@ export var SettingsControlPanel = Vue.component("settings-control-panel", {
                     <v-col class="text-center" cols="12">
                         <v-btn @click="$router.push({'name': 'language'})">
                             <v-icon>mdi-flag</v-icon>
-                            <span>{{ $t("screen.settings.language.name") }}</span>
+                            <span>{{ $t("screen.settings.language.name") }} - {{ this.$i18n.locale }}</span>
                         </v-btn>
                     </v-col>
                 </v-row>
