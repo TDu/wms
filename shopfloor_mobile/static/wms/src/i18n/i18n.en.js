@@ -61,6 +61,7 @@ const messages_en = {
     app: {
         profile_not_configured: "Profile not configured yet. Please select one.",
         profile_configure: "Configure profile",
+        workstation_scan: "Scan workstation",
         loading: "Loading...",
         nav: {
             scenario: "Scenario:",
