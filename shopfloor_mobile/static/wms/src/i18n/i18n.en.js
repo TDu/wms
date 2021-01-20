@@ -47,6 +47,11 @@ const messages_en = {
                     logout: "Logout",
                 },
             },
+            workstation: {
+                name: "Workstation",
+                title: "Select workstation",
+                workstation_updated: "Workstation updated",
+            },
             fullscreen: {
                 enter: "Go fullscreen",
                 exit: "Exit fullscreen",
