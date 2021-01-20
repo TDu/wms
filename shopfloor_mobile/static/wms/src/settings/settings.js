@@ -16,6 +16,15 @@ export var SettingsControlPanel = Vue.component("settings-control-panel", {
             this.$root.logout();
         },
     },
+    computed: {
+        available_languages() {
+            return this.$root.available_languages;
+        },
+        active_language() {
+            var language = this.available_languages.find( ({ id }) => id === this.$i18n.locale);
+            return language ? language.name : "?";
+        }
+    },
     template: `
         <Screen :screen_info="{title: $t('screen.settings.home.title'), klass: 'settings settings-control-panel'}">
 
@@ -54,7 +63,7 @@ export var SettingsControlPanel = Vue.component("settings-control-panel", {
                     <v-col class="text-center" cols="12">
                         <v-btn @click="$router.push({'name': 'language'})">
                             <v-icon>mdi-flag</v-icon>
-                            <span>{{ $t("screen.settings.language.name") }} - {{ this.$i18n.locale }}</span>
+                            <span>{{ $t("screen.settings.language.name") }} - {{ this.active_language }}</span>
                         </v-btn>
                     </v-col>
                 </v-row>
