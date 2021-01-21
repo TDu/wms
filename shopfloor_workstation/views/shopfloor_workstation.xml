@@ -32,7 +32,7 @@
                             <field name="warehouse_id" />
                         </group>
                         <group>
-                          <field name="label_printer_id" />
+                          <!-- <field name="label_printer_id" /> -->
                           <field name="standard_printer_id" />
                           <field name="shopfloor_profile_id" />
                           <field name="active" invisible="1" />

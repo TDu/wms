@@ -1,7 +1,4 @@
-Workstations
-------------
+The configuration of workstations is done from the menu located in
+Inventory / Configuration / Shopfloor / Workstations.
 
-In Inventory / Configuration / Shopfloor / Workstations.
-
-The workstations are used
-
+A workstation can have a shopfloor profile assigned and a default printer.

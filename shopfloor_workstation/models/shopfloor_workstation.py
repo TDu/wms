@@ -18,9 +18,10 @@ class ShopfloorWorkstation(models.Model):
     standard_printer_id = fields.Many2one(
         comodel_name="printing.printer", string="Standard Printer"
     )
-    label_printer_id = fields.Many2one(
-        comodel_name="printing.printer", string="Label Printer"
-    )
+    # TODO move to related module
+    # label_printer_id = fields.Many2one(
+    #     comodel_name="printing.printer", string="Label Printer"
+    # )
     shopfloor_profile_id = fields.Many2one(
         comodel_name="shopfloor.profile", string="Shopfloor Profile"
     )

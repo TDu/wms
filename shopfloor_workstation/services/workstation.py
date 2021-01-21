@@ -6,7 +6,11 @@ from odoo.addons.component.core import Component
 
 class ShopfloorWorkstation(Component):
     """
-    ? storing the configuration for the .
+    Workstation service for the mobile application.
+
+    This allows to scan a workstation bar code on the floor, which
+    will set a default profile on the mobile app and offer the option
+    to change some configuration of the connected user.
 
     """
 
@@ -16,25 +20,26 @@ class ShopfloorWorkstation(Component):
     _expose_model = "shopfloor.workstation"
     _description = __doc__
 
-    def _search(self, name_fragment=None):
-        domain = self._get_base_search_domain()
-        if name_fragment:
-            domain.append(("name", "ilike", name_fragment))
-        records = self.env[self._expose_model].search(domain)
-        return records
+    # def _search(self, name_fragment=None):
+    #     domain = self._get_base_search_domain()
+    #     if name_fragment:
+    #         domain.append(("name", "ilike", name_fragment))
+    #     records = self.env[self._expose_model].search(domain)
+    #     return records
 
-    def search(self, name_fragment=None):
-        """List available workstation"""
-        records = self._search(name_fragment=name_fragment)
-        return self._response(
-            data={"size": len(records), "records": self._to_json(records)}
-        )
+    # def search(self, name_fragment=None):
+    #     """List available workstation"""
+    #     records = self._search(name_fragment=name_fragment)
+    #     return self._response(
+    #         data={"size": len(records), "records": self._to_json(records)}
+    #     )
 
-    def get(self, _id):
-        return {
-            'response': 'Get called with message ' + str(_id)}
+    # def get(self, _id):
+    #     return {
+    #         'response': 'Get called with message ' + str(_id)}
 
     def setdefault(self, barcode):
+        """Endpoint that receives a scanned barcode."""
         ws = self.env["shopfloor.workstation"].search([("barcode", "=", barcode)])
         if self._set_workstation_as_default(ws):
             message = {
@@ -46,15 +51,14 @@ class ShopfloorWorkstation(Component):
                 "message_type": "error",
                 "body": "Workstation not found",
             }
-        # return {"message": message}
         return self._response(
             message=message,
             data={"size": len(ws), "records": self._to_json(ws)}
         )
 
     def _set_workstation_as_default(self, workstation):
+        """Apply changes to backend user configuration."""
         if not workstation:
-            # self.env.user
             return False
         if workstation.standard_printer_id:
             # TODO : should the default action be checked ?
@@ -105,16 +109,16 @@ class ShopfloorWorkstationValidatorResponse(Component):
     _name = "shopfloor.workstation.validator.response"
     _usage = "workstation.validator.response"
 
-    def search(self):
-        return self._response_schema(
-            {
-                "size": {"coerce": to_int, "required": True, "type": "integer"},
-                "records": {
-                    "type": "list",
-                    "schema": {"type": "dict", "schema": self._record_schema},
-                },
-            }
-        )
+    # def search(self):
+    #     return self._response_schema(
+    #         {
+    #             "size": {"coerce": to_int, "required": True, "type": "integer"},
+    #             "records": {
+    #                 "type": "list",
+    #                 "schema": {"type": "dict", "schema": self._record_schema},
+    #             },
+    #         }
+    #     )
 
     def setdefault(self):
         return self._response_schema(
