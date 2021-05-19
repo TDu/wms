@@ -79,6 +79,13 @@ const ClusterPicking = {
             </div>
 
             <div class="unload-all" v-if="state_is('unload_all')">
+                <item-detail-card
+                    v-if="current_carrier()"
+                    :card_color="utils.colors.color_for('screen_step_done')"
+                    :key="make_state_component_key(['batch-picking', state.data.id])"
+                    :record="current_carrier()"
+                    :options="{main: true, key_title: 'name', title_icon: 'mdi-truck-outline'}"
+                    />
                 <v-card class="main">
                     <v-card-title>
                         <div class="main-info">
@@ -117,6 +124,15 @@ const ClusterPicking = {
         },
     },
     methods: {
+        current_carrier: function() {
+            // Advise to get it from start_line but not always exists.
+            // And the confirm_start can habe multiple pickings !
+            const data = this.$storage.get("cluster_picking.confirm_start");
+            if (!data){
+                return None;
+            }
+            return data.pickings[0].carrier || data.pickings[0].ship_carrier;
+        },
         screen_title: function() {
             if (_.isEmpty(this.current_batch()) || this.state_is("confirm_start"))
                 return this.menu_item().name;

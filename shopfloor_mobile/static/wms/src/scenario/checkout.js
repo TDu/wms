@@ -54,9 +54,10 @@ const Checkout = {
             </div>
             <div v-if="state_is('select_line')">
                 <item-detail-card
-                    v-if="state.data.picking.carrier"
+                    v-if="current_carrier()"
+                    :card_color="utils.colors.color_for('screen_step_done')"
                     :key="make_state_component_key(['picking-carrier', state.data.picking.id])"
-                    :record="state.data.picking.carrier"
+                    :record="current_carrier()"
                     :options="{main: true, key_title: 'name', title_icon: 'mdi-truck-outline'}"
                     />
                 <detail-picking-select
@@ -246,6 +247,9 @@ const Checkout = {
         },
     },
     methods: {
+        current_carrier: function() {
+            return this.state.data.picking.carrier || this.state.data.picking.ship_carrier;
+        },
         screen_title: function() {
             if (_.isEmpty(this.current_doc()) || this.state_is("confirm_start"))
                 return this.menu_item().name;
