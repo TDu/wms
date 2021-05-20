@@ -125,13 +125,11 @@ const ClusterPicking = {
     },
     methods: {
         current_carrier: function() {
-            // Advise to get it from start_line but not always exists.
-            // And the confirm_start can habe multiple pickings !
-            const data = this.$storage.get("cluster_picking.confirm_start");
-            if (!data){
-                return None;
+            const pick = this.current_picking();
+            if (!pick){
+                return null;
             }
-            return data.pickings[0].carrier || data.pickings[0].ship_carrier;
+            return pick.carrier || pick.ship_carrier;
         },
         screen_title: function() {
             if (_.isEmpty(this.current_batch()) || this.state_is("confirm_start"))
