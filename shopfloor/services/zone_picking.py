@@ -172,10 +172,14 @@ class ZonePicking(Component):
             message=message,
         )
 
-    def _response_for_select_line(self, move_lines, message=None, popup=None):
+    def _response_for_select_line(self, move_lines, message=None, popup=None, confirmation_required=False):
+        if confirmation_required and not message:
+            message = self.msg_store.need_confirmation()
+        data = self._data_for_move_lines(move_lines)
+        data["confirmation_required"] = confirmation_required
         return self._response(
             next_state="select_line",
-            data=self._data_for_move_lines(move_lines),
+            data=data,
             message=message,
             popup=popup,
         )
@@ -348,6 +352,25 @@ class ZonePicking(Component):
             match_user=match_user,
         )
 
+    def _find_location_move_lines_different_package(
+        self,
+        locations=None,
+        picking_type=None,
+        package=None,
+        product=None,
+        lot=None,
+        match_user=False,
+    ):
+        return self.search_move_line.search_move_lines_by_location(
+            locations or self.zone_location,
+            picking_type=picking_type or self.picking_type,
+            order=self.lines_order,
+            package=package,
+            product=product,
+            lot=lot,
+            match_user=match_user,
+        )
+
     def _find_buffer_move_lines_domain(self, dest_package=None):
         domain = [
             ("picking_id.picking_type_id", "in", self.picking_types.ids),
@@ -481,6 +504,20 @@ class ZonePicking(Component):
         move_lines = self._find_location_move_lines(package=package)
         if move_lines:
             response = self._response_for_set_line_destination(first(move_lines))
+            return response, message
+        # No move lnes with that package have been found
+        if package.location_id: # and package.product_packaging_id:
+            # Check if the package selected can be a substitute on a move line
+            move_lines = self._find_location_move_lines(
+                locations=package.location_id,
+                product=package.product_packaging_id.product_id,
+            )
+        if move_lines:
+            # should check if it is the same packaging as well, no ?
+            print("FOUND MOVE LINES for same product but different package")
+            message = self.msg_store.package_different_change()
+            response = self._response_for_select_line(move_lines, message, confirmation_required=True)
+            return response, message
         else:
             response = self._list_move_lines(self.zone_location)
             message = self.msg_store.package_not_found()
@@ -520,7 +557,7 @@ class ZonePicking(Component):
             message = self.msg_store.lot_not_found()
         return response, message
 
-    def scan_source(self, barcode):
+    def scan_source(self, barcode, confirmation=False):
         """Select a move line or narrow the list of move lines
 
         When the barcode is a location and we can unambiguously know which move
@@ -540,6 +577,10 @@ class ZonePicking(Component):
         * select_line: barcode not found or narrow the list on a location
         * set_line_destination: a line has been selected for picking
         """
+
+        # How to handle the confirmation required here ?
+        print(f"SCAN SOURCE Confirm ?{confirmation}")
+
         # select corresponding move line from barcode (location, package, product, lot)
         handlers = (
             # search by location 1st
@@ -1320,6 +1361,7 @@ class ShopfloorZonePickingValidator(Component):
     def scan_source(self):
         return {
             "barcode": {"required": False, "nullable": True, "type": "string"},
+            "confirmation": {"type": "boolean", "nullable": True, "required": False},
         }
 
     def set_destination(self):
