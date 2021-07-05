@@ -20,13 +20,11 @@ const DeliveryShipment = {
                 />
 
             <item-detail-card
-                v-if="!state_is('scan_dock')"
-                :key="make_state_component_key(['manual-transfer-loc-src', location_src().id])"
-                :record="location_src()"
+                v-if="state_in(['scan_document'])"
+                :key="make_state_component_key(['delivery-shipment-pick', picking().id])"
+                :record="picking()"
                 :options="{main: true, key_title: 'name', title_action_field: {action_val_path: 'barcode'}}"
                 :card_color="utils.colors.color_for('screen_step_done')"
-                />
-                :card_color="utils.colors.color_for('screen_step_todo')"
                 />
 
             <div class="button-list button-vertical-list full" v-if="!state_is('scan_dock')">
@@ -44,6 +42,12 @@ const DeliveryShipment = {
                 return this.menu_item().name;
             }
             return this.state.data.picking.name;
+        },
+        picking: function() {
+            if (_.isEmpty(this.state.data.picking)) {
+                return {};
+            }
+            return this.state.data.picking;
         },
     },
     data: function() {
@@ -65,7 +69,7 @@ const DeliveryShipment = {
                         );
                     },
                 },
-                scan_shipment_content: {
+                scan_document: {
                     display_info: {
                         title: "Scan some shipment's content",
                         scan_placeholder: "Scan a lot, product, pack or operation",

@@ -14,35 +14,60 @@ const delivery_shipment_menu_id = demotools.addAppMenu({
     scenario: "delivery_shipment",
     picking_types: [{id: 27, name: "Random type"}],
 });
-// const single_line_case_move_line = demotools.makeSingleLineOperation();
 const source_location = demotools.makeLocation();
+const pick = demotools.makePicking();
 const DELIVERY_SHIPMENT_CASE = {
-    // should be scan_dock
-    start: {
-        next_state: "scan_dock",
+    // init: {
+    //     next_state: "scan_document",
+    //     message: {
+    //         message_type: "info",
+    //         body: "Start state",
+    //     },
+    //     data: {
+    //         scan_dock: {
+    //             picking: _.cloneDeep(pick),
+    //             shipment_advice: {},
+    //         },
+    //     },
+    // },
+    scan_dock: {
+        next_state: "scan_document",
         message: {
             message_type: "info",
-            body: "Pprevious line processed info.",
+            body: "Scan dock state",
         },
         data: {
-            // scan_source_location: {
-            //     move_line: _.cloneDeep(single_line_case_move_line),
-            // },
+            scan_document: {
+                picking: _.cloneDeep(pick),
+                shipment_advice: {},
+            },
         },
     },
-    scan_dock: {
-        next_state: "scan_product",
+    scan_document: {
+        next_state: "loading_list",
         message: {
             message_type: "info",
-            body: "Recovered line from previous session.",
+            body: "Scan document_state",
         },
         data: {
-            scan_source_location: {
+            scan_document: {
                 location: _.cloneDeep(source_location),
             },
         },
     },
+    loading_list: {
+        next_state: "scan_dock",
+        message: {
+            message_type: "info",
+            body: "Loading list state",
+        },
+        data: {
+            scan_document: {
+                location: _.cloneDeep(source_location),
+            },
+        },
+    }
 };
-DEMO_CASE.by_menu_id[delivery_shipment_menu_id] = DELIVERY_SHIPMENT_CASE;
+// DEMO_CASE.by_menu_id[delivery_shipment_menu_id] = DELIVERY_SHIPMENT_CASE;
 
-demotools.add_case("shipment_delivery", DEMO_CASE);
+demotools.add_case("delivery_shipment", DELIVERY_SHIPMENT_CASE);
