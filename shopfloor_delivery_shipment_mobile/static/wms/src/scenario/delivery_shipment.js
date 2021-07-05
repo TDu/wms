@@ -26,11 +26,23 @@ const DeliveryShipment = {
                 :options="{main: true, key_title: 'name', title_action_field: {action_val_path: 'barcode'}}"
                 :card_color="utils.colors.color_for('screen_step_done')"
                 />
+            <item-detail-card
+                v-if="state_in(['scan_document'])"
+                :key="make_state_component_key(['delivery-shipment-shipment', shipment().id])"
+                :record="shipment()"
+                :options="{main: true, key_title: 'name', title_action_field: {action_val_path: 'barcode'}, fields: [{path: 'dock.name', label: 'Dock'}]}"
+                :card_color="utils.colors.color_for('screen_step_done')"
+                />
 
             <div class="button-list button-vertical-list full" v-if="!state_is('scan_dock')">
                 <v-row align="center">
                     <v-col class="text-center" cols="12">
                         <btn-action color="default" @click="state.on_cancel">Cancel</btn-action>
+                    </v-col>
+                </v-row>
+                <v-row align="center">
+                    <v-col class="text-center" cols="12">
+                        <btn-action color="default" @click="state.on_go2loading_list">Shipment Advice</btn-action>
                     </v-col>
                 </v-row>
             </div>
@@ -48,6 +60,12 @@ const DeliveryShipment = {
                 return {};
             }
             return this.state.data.picking;
+        },
+        shipment: function() {
+            if (_.isEmpty(this.state.data.shipment_advice)) {
+                return {};
+            }
+            return this.state.data.shipment_advice;
         },
     },
     data: function() {
@@ -83,7 +101,7 @@ const DeliveryShipment = {
                         );
                     },
                     on_cancel: () => {
-                        this.state_to("scan_source_location");
+                        this.state_to("scan_dock");
                     },
                 },
             },

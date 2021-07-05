@@ -14,22 +14,17 @@ const delivery_shipment_menu_id = demotools.addAppMenu({
     scenario: "delivery_shipment",
     picking_types: [{id: 27, name: "Random type"}],
 });
-const source_location = demotools.makeLocation();
 const pick = demotools.makePicking();
+const shipment = {
+    id: 1,
+    name: "SA/OUT/0000001",
+    state: "confirmed",
+    dock: {
+        id: 1,
+        name: "Dock 01",
+    },
+};
 const DELIVERY_SHIPMENT_CASE = {
-    // init: {
-    //     next_state: "scan_document",
-    //     message: {
-    //         message_type: "info",
-    //         body: "Start state",
-    //     },
-    //     data: {
-    //         scan_dock: {
-    //             picking: _.cloneDeep(pick),
-    //             shipment_advice: {},
-    //         },
-    //     },
-    // },
     scan_dock: {
         next_state: "scan_document",
         message: {
@@ -39,7 +34,7 @@ const DELIVERY_SHIPMENT_CASE = {
         data: {
             scan_document: {
                 picking: _.cloneDeep(pick),
-                shipment_advice: {},
+                shipment_advice: _.cloneDeep(shipment),
             },
         },
     },
@@ -50,8 +45,9 @@ const DELIVERY_SHIPMENT_CASE = {
             body: "Scan document_state",
         },
         data: {
-            scan_document: {
-                location: _.cloneDeep(source_location),
+            loading_list: {
+                picking: _.cloneDeep(pick),
+                shipment_advice: _.cloneDeep(shipment),
             },
         },
     },
@@ -62,11 +58,9 @@ const DELIVERY_SHIPMENT_CASE = {
             body: "Loading list state",
         },
         data: {
-            scan_document: {
-                location: _.cloneDeep(source_location),
-            },
+            scan_dock: {},
         },
-    }
+    },
 };
 // DEMO_CASE.by_menu_id[delivery_shipment_menu_id] = DELIVERY_SHIPMENT_CASE;
 
