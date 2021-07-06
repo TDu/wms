@@ -35,17 +35,28 @@ const DeliveryShipment = {
                 />
 
             <div class="button-list button-vertical-list full" v-if="!state_is('scan_dock')">
-                <v-row align="center">
-                    <v-col class="text-center" cols="12">
-                        <btn-action color="default" @click="state.on_cancel">Cancel</btn-action>
-                    </v-col>
-                </v-row>
-                <v-row align="center">
+                <v-row align="center" v-if="state_is('scan_document')">
                     <v-col class="text-center" cols="12">
                         <btn-action color="default" @click="state.on_go2loading_list">Shipment Advice</btn-action>
                     </v-col>
                 </v-row>
+                <v-row align="center" v-if="state_is('loading_list')">
+                    <v-col class="text-center" cols="12">
+                        <btn-action color="default" @click="state.on_close_shipment">Close Shipment</btn-action>
+                    </v-col>
+                </v-row>
+                <v-row align="center" v-if="state_is('validate_shipment')">
+                    <v-col class="text-center" cols="12">
+                        <btn-action color="default" @click="state.on_confirm">Confirm</btn-action>
+                    </v-col>
+                </v-row>
+                <v-row align="center">
+                    <v-col class="text-center" cols="12">
+                        <btn-action color="default" @click="state.on_back">{{ btnBackLabel() }}</btn-action>
+                    </v-col>
+                </v-row>
             </div>
+
         </Screen>
         `,
     methods: {
@@ -54,6 +65,9 @@ const DeliveryShipment = {
                 return this.menu_item().name;
             }
             return this.state.data.picking.name;
+        },
+        btnBackLabel: function() {
+            return this.state.buttonBackLabel || "Back";
         },
         picking: function() {
             if (_.isEmpty(this.state.data.picking)) {
@@ -90,18 +104,60 @@ const DeliveryShipment = {
                 scan_document: {
                     display_info: {
                         title: "Scan some shipment's content",
-                        scan_placeholder: "Scan a lot, product, pack or operation",
+                        scan_placeholder:
+                            "Scan a lot, a product, a pack or an operation",
                     },
                     on_scan: scanned => {
                         this.wait_call(
-                            this.odoo.call("scan_shipment_content", {
+                            this.odoo.call("scan_document", {
                                 barcode: scanned.text,
-                                shipment_id: this.shipment().id,
+                                shipment_advice_id: this.shipment().id,
+                                // picking_id
                             })
                         );
                     },
-                    on_cancel: () => {
+                    on_back: () => {
                         this.state_to("scan_dock");
+                    },
+                    on_go2loading_list: () => {
+                        this.state_to("loading_list");
+                    },
+                },
+                loading_list: {
+                    display_info: {
+                        title: "Filter documents",
+                        scan_placeholder: "Scan a document number",
+                    },
+                    on_scan: scanned => {
+                        this.wait_call(
+                            this.odoo.call("loading_list", {
+                                // barcode: scanned.text,
+                                shipment_advice_id: this.shipment().id,
+                            })
+                        );
+                    },
+                    on_back: () => {
+                        this.state_to("scan_document");
+                    },
+                    on_close_shipment: () => {
+                        console.log("Close Shipment !");
+                        this.state_to("validate_shipment");
+                    },
+                },
+                validate_shipment: {
+                    display_info: {
+                        title: "Shipment closure confirmation",
+                    },
+                    buttonBackLabel: "Cancel",
+                    on_back: () => {
+                        this.state_to("loading_list");
+                    },
+                    on_confirm: () => {
+                        this.wait_call(
+                            this.odoo.call("validate_shipment", {
+                                shipment_advice_id: this.shipment().id,
+                            })
+                        );
                     },
                 },
             },

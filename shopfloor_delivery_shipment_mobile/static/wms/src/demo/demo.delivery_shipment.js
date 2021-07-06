@@ -27,10 +27,10 @@ const shipment = {
 const DELIVERY_SHIPMENT_CASE = {
     scan_dock: {
         next_state: "scan_document",
-        message: {
-            message_type: "info",
-            body: "Scan dock state",
-        },
+        // message: {
+        //     message_type: "info",
+        //     body: "Scan dock state",
+        // },
         data: {
             scan_document: {
                 picking: _.cloneDeep(pick),
@@ -40,10 +40,10 @@ const DELIVERY_SHIPMENT_CASE = {
     },
     scan_document: {
         next_state: "loading_list",
-        message: {
-            message_type: "info",
-            body: "Scan document_state",
-        },
+        // message: {
+        //     message_type: "info",
+        //     body: "Scan document_state",
+        // },
         data: {
             loading_list: {
                 picking: _.cloneDeep(pick),
@@ -52,10 +52,23 @@ const DELIVERY_SHIPMENT_CASE = {
         },
     },
     loading_list: {
+        next_state: "validate_shipment",
+        // message: {
+        //     message_type: "info",
+        // body: "Loading list state",
+        // },
+        data: {
+            validate_shipment: {
+                picking: _.cloneDeep(pick),
+                shipment_advice: _.cloneDeep(shipment),
+            },
+        },
+    },
+    validate_shipment: {
         next_state: "scan_dock",
         message: {
             message_type: "info",
-            body: "Loading list state",
+            body: "Shipment ABC has been validated",
         },
         data: {
             scan_dock: {},
